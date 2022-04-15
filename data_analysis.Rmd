@@ -23,21 +23,21 @@ for (year in 10:18){
   inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
   outputFilename <- str_c("data/dc_may_20", toString(year), ".csv")
   all_states <- read.csv(inputFilename)
-  all_states %>% 
+  all_states <- all_states %>% 
     filter(AREA == 11) %>%
-    rename(STATE = AREA_NAME) %>% 
+    rename(AREA_NAME = STATE) %>% 
     write_csv(outputFilename)
 }
 
-#Column format changes is 2019
+#Column format changes in 2019
 for (year in 19:21){
   inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
   outputFilename <- str_c("data/dc_may_20", toString(year), ".csv")
   all_states <- read.csv(inputFilename)
   names(all_states) <- toupper(names(all_states))
-  all_states %>% 
+  all_states <- all_states %>% 
     filter(AREA == 11) %>%
-    rename(STATE = AREA_NAME) %>% 
+    rename(AREA_NAME = AREA_TITLE) %>% 
     write_csv(outputFilename)
 }
 ```
@@ -81,4 +81,8 @@ for (year in 19:21){
     write_csv(outputFilename)
   }
 }
+```
+
+```{r}
+dc_2010 <- read_csv("data/DC/dc_may_2011.csv")
 ```
