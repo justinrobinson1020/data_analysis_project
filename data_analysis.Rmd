@@ -207,3 +207,331 @@ head_chefs <- dc_all_years %>%
 ```
 
 
+---
+title: "lab_11"
+author: "sean mussenden"
+date: "8/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Libraries
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+#Seperate out data for D.C. and save to new csv file
+```{r}
+state_may_2010 <- read_csv("data/state_csv/state_may_2010.csv")
+dc_2010 <- state_may_2010 %>% filter(ST == "DC")
+
+for (year in 10:18){
+  inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/DC/dc_may_20", toString(year), ".csv")
+  all_states <- read.csv(inputFilename)
+  all_states <- all_states %>% 
+    filter(AREA == 11) %>%
+    rename(AREA_NAME = STATE) %>% 
+    write_csv(outputFilename)
+}
+
+#Column format changes in 2019
+for (year in 19:21){
+  inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/DC/dc_may_20", toString(year), ".csv")
+  all_states <- read.csv(inputFilename)
+  names(all_states) <- toupper(names(all_states))
+  all_states <- all_states %>% 
+    filter(AREA == 11) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+}
+```
+
+#Seperate out San Francisco and Seattle
+```{r}
+state_may_2010 <- read_csv("data/state_csv/state_may_2010.csv")
+dc_2010 <- state_may_2010 %>% filter(ST == "DC")
+
+for (year in 10:18){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year),".csv")
+  outputFilename <- str_c("data/SF/sf_may_20", toString(year), ".csv")
+  
+  all_areas <- read.csv(inputFilename)
+  all_areas %>% 
+    filter(AREA == 41884) %>%
+    write_csv(outputFilename)
+  
+  outputFilename <- str_c("data/SEA/sea_may_20", toString(year), ".csv")
+  all_areas %>% 
+    filter(AREA == 42644) %>%
+    write_csv(outputFilename)
+}
+
+for (year in 19:21){
+  for(i in 1:3){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year), ".csv")
+  all_areas <- read.csv(inputFilename)
+  names(all_areas) <- toupper(names(all_areas))
+  
+  outputFilename <- str_c("data/SF/sf_may_20", toString(year), ".csv")
+  all_areas %>% 
+    filter(AREA == 41884) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+  
+  outputFilename <- str_c("data/SEA/sea_may_20", toString(year), ".csv")
+  all_areas %>% 
+    filter(AREA == 42644) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+  }
+}
+```
+
+#Stitch every year of DC data together
+```{r}
+dc_all_years <- tibble()
+
+for (year in 2011:2021){
+  next_year <- read_csv(str_c("data/DC/dc_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  dc_all_years <- dc_all_years %>% bind_rows(next_year)
+}
+
+dc_all_years %>% 
+  write_csv("data/DC/dc_all_years.csv")
+```
+
+#Clean up column names and fix data types
+```{r}
+dc_all_years <- dc_all_years %>% 
+  clean_names() %>% 
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
+  mutate(h_mean = as.numeric(h_mean)) %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>% 
+  mutate(mean_prse = as.numeric(mean_prse)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_pct25 = as.numeric(h_pct25)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_median = as.numeric(h_median)) %>% 
+  mutate(h_pct75 = as.numeric(h_pct75)) %>% 
+  mutate(h_pct90 = as.numeric(h_pct90)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_pct25 = as.numeric(a_pct25)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_median = as.numeric(a_median)) %>% 
+  mutate(a_pct75 = as.numeric(a_pct75)) %>% 
+  mutate(a_pct90 = as.numeric(a_pct90))
+```
+
+#Data frames for restaurant occupations
+```{r}
+bartenders <- dc_all_years %>% 
+  filter(occ_title== "Bartenders") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+servers <- dc_all_years %>% 
+  filter(occ_title== "Waiters and Waitresses") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+	
+
+counter_service <- dc_all_years %>% 
+  filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+dishwashers <- dc_all_years %>% 
+  filter(occ_title== "Dishwashers") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+
+cooks <- dc_all_years %>% 
+  filter(occ_title== "Cooks, Restaurant") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+head_chefs <- dc_all_years %>% 
+  filter(occ_title== "Chefs and Head Cooks") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+```
+
+
+
+```{r}
+sea_all_years <- tibble()
+
+for (year in 2011:2017){
+  print(year)
+  next_year <- read_csv(str_c("data/SEA/sea_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  sea_all_years <- sea_all_years %>% bind_rows(next_year)
+}
+
+sea_all_years %>% 
+  write_csv("data/SEA/sea_all_years.csv")
+
+```
+
+```{r}
+sea_all_years <- sea_all_years %>% 
+  clean_names() %>% 
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
+  mutate(h_mean = as.numeric(h_mean)) %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>% 
+  mutate(mean_prse = as.numeric(mean_prse)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_pct25 = as.numeric(h_pct25)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_median = as.numeric(h_median)) %>% 
+  mutate(h_pct75 = as.numeric(h_pct75)) %>% 
+  mutate(h_pct90 = as.numeric(h_pct90)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_pct25 = as.numeric(a_pct25)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_median = as.numeric(a_median)) %>% 
+  mutate(a_pct75 = as.numeric(a_pct75)) %>% 
+  mutate(a_pct90 = as.numeric(a_pct90))
+```
+
+#Data frames for restaurant occupations
+```{r}
+bartenders <- sea_all_years %>% 
+  filter(occ_title== "Bartenders") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+servers <- sea_all_years %>% 
+  filter(occ_title== "Waiters and Waitresses") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+counter_service <- sea_all_years %>% 
+  filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+dishwashers <- sea_all_years %>% 
+  filter(occ_title== "Dishwashers") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+cooks <- sea_all_years %>% 
+  filter(occ_title== "Cooks, Restaurant") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+
+head_chefs <- sea_all_years %>% 
+  filter(occ_title == "Chefs and Head Cooks") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp
+  )
+```
