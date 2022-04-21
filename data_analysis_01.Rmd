@@ -31,8 +31,9 @@ Our data came from the Bureau of Labor Statistics. We had to take data from all 
 ```{r}
 # Load required data
 
-sf_data <- read_csv("data/SF/sf_all_years.csv")
-dc_data <- read_csv("data/DC/dc_all_years.csv")
+sf_all_years <- read_csv("data/SF/sf_all_years.csv")
+dc_all_years <- read_csv("data/DC/dc_all_years.csv")
+sea_all_years <- read_csv("date/SEA/sea_all_years.csv")
 ```
 
 ## Exploratory analysis
