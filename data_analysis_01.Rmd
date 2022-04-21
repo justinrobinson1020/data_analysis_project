@@ -1,0 +1,56 @@
+---
+title: "Reverse Engineering Project"
+author: "Hanna Zakharenko"
+date: "Date here"
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load libraries
+
+Loading required libraries for this analysis.
+
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+## Load Data
+
+Our data came from the Bureau of Labor Statistics. We had to take data from all metropolitan areas, filter for the areas we are looking into (San Francisco, DC, and Seattle) and then combine each years data into one csv. 
+
+```{r}
+# Load required data
+
+sf_data <- read_csv("data/SF/sf_all_years.csv")
+dc_data <- read_csv("data/DC/dc_all_years.csv")
+```
+
+## Exploratory analysis
+```{r}
+glimpse(dc_data)
+glimpse(sf_data)
+```
+```{r}
+summary(dc_data)
+summary(sf_data)
+```
+
+## Limitations or flaws
+- When cleaning the data, it was possible that we might have introduced errors into the dataset, since we used different methods to clean and combine our data. Going forward, we should check our data cleaning techniques and make sure that all our work matches up as we continue to clean and add more data.
+- While cleaning our data, we noticed that in 2018, they added new information to the data that was previously not included (like another group definition, NAICS code and own code).
+- With a little bit more exploration, I think we should be able to use this data to answer our questions once we understand the columns and what data they provide a little more. 
+- This data currently holds a lot of data on occupants, but not more detailed information on areas we are specifically looking into (careers where tip credit matters), so going forward, we may want to incorporate other data to compare with what we've already collected and combined
+
+
+
+-30-
