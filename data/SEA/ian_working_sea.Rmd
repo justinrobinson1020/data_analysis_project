@@ -1,0 +1,40 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+#Libraries
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+sea <- read.csv("data/SEA/sea_may_2010.csv")
+
+```
+
+#Stitch every year of SEA data together
+```{r}
+sea_all_years <- tibble()
+
+for (year in 2011:2021){
+  next_year <- read_csv(str_c("data/SEA/sea_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  sea_all_years <- sea_all_years %>% bind_rows(next_year)
+}
+
+sea_all_years %>% 
+  write_csv("data/DC/dc_all_years.csv")
+
+
+
+
+```
+
+
