@@ -1,0 +1,210 @@
+---
+title: "question_03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+3. How do tip credits affect the wage gap between front and back-of-house workers?
+- FOH (Bartenders, servers) v. BOH( cooks/dishwashers	)
+- Gap in earnings (find the difference between FOH average and BOH average median)
+- Possibly report it in a table with the median for each of these groups as well -- DataWrapper table with filtering
+
+
+comparing bartenders and servers (FOH) with BOH (cooks and dishwashers)
+```{r}
+sea_all_years<- read_csv("https://raw.githubusercontent.com/justinrobinson1020/data_analysis_project/main/data/SEA/sea_all_years.csv")
+```
+1. Create a combined table with year, median, and total employees for FOH workers in each city (bartenders and servers)
+
+##Seattle:
+```{r}
+sea_servers_to_combine <- sea_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+
+sea_bartenders_to_combine <- sea_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+sea_FOH <- sea_servers_to_combine %>%
+  left_join(sea_bartenders_to_combine)
+
+
+sea_FOH <- sea_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+
+##SanFran -- same data as SEA -- FIX
+```{r}
+sf_servers_to_combine <- sf_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+
+sf_bartenders_to_combine <- sf_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+sf_FOH <- sf_servers_to_combine %>%
+  left_join(sf_bartenders_to_combine)
+
+
+sf_FOH <- sf_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+
+
+##DC
+```{r}
+dc_servers_to_combine <-dc_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+
+dc_bartenders_to_combine <- dc_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+dc_FOH <- dc_servers_to_combine %>%
+  left_join(dc_bartenders_to_combine)
+
+
+dc_FOH <- dc_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+2. Create a combined table with year, median, and total employees for BOH workers in each city (cooks and dishwashers)
+
+##Seattle
+```{r}
+sea_cooks_to_combine <- sea_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+
+sea_dishwashers_to_combine <- sea_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+sea_BOH <- sea_cooks_to_combine %>%
+  left_join(sea_dishwashers_to_combine)
+
+
+sea_BOH <- sea_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+##SanFran
+```{r}
+sf_cooks_to_combine <- sf_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+
+sf_dishwashers_to_combine <- sf_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+sf_BOH <- sf_cooks_to_combine %>%
+  left_join(sf_dishwashers_to_combine)
+
+
+sf_BOH <-sf_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+
+
+##DC 
+```{r}
+dc_cooks_to_combine <- dc_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+
+dc_dishwashers_to_combine <- dc_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+dc_BOH <- dc_cooks_to_combine %>%
+  left_join(dc_dishwashers_to_combine)
+
+
+dc_BOH <- dc_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+
+3. Combine the FOH and BOH averages together and subtract them to find the difference for each city
+```{r}
+sea_FOH_BOH <- sea_FOH %>%
+  left_join(sea_BOH)
+
+
+sea_final <-sea_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+```{r}
+SEA_difference_FOH_BOH <-mean(sea_final$difference)
+```
+
+
+```{r}
+sf_FOH_BOH <- sf_FOH %>%
+  left_join(sf_BOH)
+
+
+sf_final <- sf_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+
+```{r}
+SF_difference_FOH_BOH <-mean(sf_final$difference)
+```
+
+```{r}
+dc_FOH_BOH <- dc_FOH %>%
+  left_join(dc_BOH)
+
+
+dc_final <- dc_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+
+```{r}
+DC_difference_FOH_BOH <-mean(dc_final$difference)
+```
+
+To answer the question (3): How do tip credits affect the wage gap between front and back-of-house workers?
+- In all 3 cities, SF and Seattle with no tip credit, and DC with a tip credit, in 2021, BOH workers were making slightly more than FOH workers. When averaging this difference across all years, DC FOH and BOH workers make close to the same amount, with only a 7 cent difference. However, in San Francisco, FOH workers make 0.29 cents less and in Seattle, FOH workers make 0.57 cents more. Therefore, this data shows that having a tip credit might even the playing ground between FOH and BOH workers.
+
+
+
+
+
+
+
