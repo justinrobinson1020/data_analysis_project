@@ -19,7 +19,7 @@ library(janitor)
 
 #Scratch Code
 ```{r}
-sf2019 <- read.csv("data/SF/sf_may_2019.csv")
+sea_servers %>% write_csv("data/sea_servers.csv")
 ```
 
 #####
@@ -163,7 +163,7 @@ sf_all_years %>%
 
 #Clean up column names and fix data types
 ```{r}
-dc_all_years <- dc_all_years %>% 
+dc_all_years_with_nas <- dc_all_years %>% 
   clean_names() %>% 
   mutate(tot_emp = as.numeric(tot_emp)) %>% 
   mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
@@ -395,7 +395,7 @@ sea_head_chefs <- sea_all_years %>%
 
 #Data frames for San Francisco restaurant occupations
 ```{r}
-sf_bartenders <- sea_all_years %>% 
+sf_bartenders <- sf_all_years %>% 
   filter(occ_title== "Bartenders") %>% 
   group_by(year) %>% 
   summarise(
@@ -408,7 +408,7 @@ sf_bartenders <- sea_all_years %>%
     tot_emp
   )
 
-sf_servers <- sea_all_years %>% 
+sf_servers <- sf_all_years %>% 
   filter(occ_title== "Waiters and Waitresses") %>% 
   group_by(year) %>% 
   summarise(
@@ -421,7 +421,7 @@ sf_servers <- sea_all_years %>%
     tot_emp
   )
 
-sf_counter_service <- sea_all_years %>% 
+sf_counter_service <- sf_all_years %>% 
   filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
   group_by(year) %>% 
   summarise(
@@ -434,7 +434,7 @@ sf_counter_service <- sea_all_years %>%
     tot_emp
   )
 
-sf_dishwashers <- sea_all_years %>% 
+sf_dishwashers <- sf_all_years %>% 
   filter(occ_title== "Dishwashers") %>% 
   group_by(year) %>% 
   summarise(
@@ -447,7 +447,7 @@ sf_dishwashers <- sea_all_years %>%
     tot_emp
   )
 
-sf_cooks <- sea_all_years %>% 
+sf_cooks <- sf_all_years %>% 
   filter(occ_title== "Cooks, Restaurant") %>% 
   group_by(year) %>% 
   summarise(
@@ -460,7 +460,7 @@ sf_cooks <- sea_all_years %>%
     tot_emp
   )
 
-sf_head_chefs <- sea_all_years %>% 
+sf_head_chefs <- sf_all_years %>% 
   filter(occ_title == "Chefs and Head Cooks") %>% 
   group_by(year) %>% 
   summarise(
@@ -473,6 +473,7 @@ sf_head_chefs <- sea_all_years %>%
     tot_emp
   )
 ```
+
 
 ## Exploratory analysis
 ```{r}
@@ -489,3 +490,7 @@ summary(sf_data)
 - While cleaning our data, we noticed that in 2018, they added new information to the data that was previously not included (like another group definition, NAICS code and own code).
 - With a little bit more exploration, I think we should be able to use this data to answer our questions once we understand the columns and what data they provide a little more. 
 - This data currently holds a lot of data on occupants, but not more detailed information on areas we are specifically looking into (careers where tip credit matters), so going forward, we may want to incorporate other data to compare with what we've already collected and combined
+
+##Question 2: How are workers across the earning spectrum affected by the tip credit (if at all)
+
+
