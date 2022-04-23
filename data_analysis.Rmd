@@ -500,6 +500,21 @@ summary(sf_all_years)
 - This data currently holds a lot of data on occupants, but not more detailed information on areas we are specifically looking into (careers where tip credit matters), so going forward, we may want to incorporate other data to compare with what we've already collected and combined
 
 
+#Question 1: Do workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+Stacked bar graph 
+DC has tip credit, Seattle and SF don’t
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
 #Question 2: How are workers across the earning spectrum affected by the tip credit (if at all)
 
 To answer this question I generated line graphs (viewable via "webpage/index.html") for servers and bartenders in each city to get a sense of the gaps between income levels and how wages have changed over time. 
