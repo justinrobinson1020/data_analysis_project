@@ -505,7 +505,21 @@ Stacked bar graph
 DC has tip credit, Seattle and SF don’t
 
 ```{r}
+sea_med_income <- sea_bartenders %>%
+  select(h_median, year) %>%
+  rename(sea_bartenders_median = h_median)
 
+dc_med_income <- dc_bartenders %>%
+  select(h_median, year) %>%
+  rename(dc_bartenders_median = h_median)
+
+sf_med_income <- sf_bartenders %>%
+  select(h_median, year) %>%
+  rename(sf_bartenders_median = h_median)
+
+bartenders_med_income <- sea_med_income %>%
+  left_join(dc_med_income) %>%
+  left_join(sf_med_income)
 
 
 
