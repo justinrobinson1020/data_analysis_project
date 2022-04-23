@@ -521,8 +521,25 @@ bartenders_med_income <- sea_med_income %>%
   left_join(dc_med_income) %>%
   left_join(sf_med_income)
 
+write_csv(bartenders_med_income, "data/bartenders_med_income.csv")
 
+sea_med_income_servers <- sea_servers %>%
+  select(h_median, year) %>%
+  rename(sea_bartenders_median = h_median)
 
+dc_med_income_servers <- dc_servers %>%
+  select(h_median, year) %>%
+  rename(dc_bartenders_median = h_median)
+
+sf_med_income_servers <- sf_servers %>%
+  select(h_median, year) %>%
+  rename(sf_bartenders_median = h_median)
+
+servers_med_income <- sea_med_income_servers %>%
+  left_join(dc_med_income_servers) %>%
+  left_join(sf_med_income_servers)
+
+write_csv(servers_med_income, "data/servers_med_income.csv")
 ```
 
 
