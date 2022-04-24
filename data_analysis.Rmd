@@ -501,8 +501,14 @@ summary(sf_all_years)
 
 
 #Question 1: Do workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+
+#Answer 1: 
 Stacked bar graph 
 DC has tip credit, Seattle and SF don’t
+
+Bartenders: https://datawrapper.dwcdn.net/yyIeu/2/
+Servers: https://datawrapper.dwcdn.net/tL0Wg/1/
+
 
 ```{r}
 sea_med_income <- sea_bartenders %>%
