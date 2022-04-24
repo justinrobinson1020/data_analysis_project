@@ -502,12 +502,10 @@ summary(sf_all_years)
 
 #Question 1: Do workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
 
-#Answer 1: 
-Stacked bar graph 
-DC has tip credit, Seattle and SF don’t
+#Answer 1: We wanted to look at whether or not workers in ctities without the tip credit make more than those in cities that pay sub-minimum wage, so we looked at two occupations heavily dependent on tips: bartenders and servers. D.C. instituted a tip credit in 2018, and since then, their median wages, according to the data gathered from the Bureau of Labor Statistics Occupational Employment and Wage Statistics, have been higher than the wages in Seattle and San Francisco. This trend seemed to flatten a bit in 2021, but that was the first full year of the pandemic, so it's hard to tell if employers were using loans to pay their employees even though restaurants suffered because of the pandemic. We decided to use a grouped bar graph because it allowed us to compare the median incomes of the three cities for the past 11 years. The graphs created in datawrapper are included below, along with the code generated for this investigation.
 
-Bartenders: https://datawrapper.dwcdn.net/yyIeu/2/
-Servers: https://datawrapper.dwcdn.net/tL0Wg/1/
+Bartenders: https://datawrapper.dwcdn.net/yyIeu/3/
+Servers: https://datawrapper.dwcdn.net/tL0Wg/2/
 
 
 ```{r}
@@ -547,9 +545,6 @@ servers_med_income <- sea_med_income_servers %>%
 
 write_csv(servers_med_income, "data/servers_med_income.csv")
 ```
-
-
-
 
 
 #Question 2: How are workers across the earning spectrum affected by the tip credit (if at all)
