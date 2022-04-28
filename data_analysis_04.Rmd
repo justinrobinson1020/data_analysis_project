@@ -1,0 +1,141 @@
+
+
+
+Question: How have the restarurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
+
+to do:
+- combine total employment for all workers (bartenderes, servers, cooks, dishwashers) for each year
+- make a column for each city and combine into one dataframe
+- graph dataframe to compare employment across cities
+
+1. Read in all data frames
+```{r}
+sea_bartenders <- read_csv("data/sea_bartenders.csv")
+sea_cooks <- read_csv("data/sea_cooks.csv")
+sea_dishwashers <- read_csv("data/sea_dishwashers.csv")
+sea_servers <- read_csv("data/sea_servers.csv")
+
+
+dc_bartenders <- read_csv("data/dc_bartenders.csv")
+dc_cooks <- read_csv("data/dc_cooks.csv")
+dc_dishwashers <- read_csv("data/dc_dishwashers.csv")
+dc_servers <- read_csv("data/dc_servers.csv")
+
+
+sf_bartenders <- read_csv("data/sf_bartenders.csv")
+sf_cooks <- read_csv("data/sf_cooks.csv")
+sf_dishwashers <- read_csv("data/sf_dishwashers.csv")
+sf_servers <- read_csv("data/sf_servers.csv")
+
+```
+
+
+
+
+
+1. Create dataframes with each total employment for DC workers and combine
+```{r}
+
+#DC 
+dc_bartenders_emp <- dc_bartenders %>%
+  select(year, tot_emp) %>%
+  rename(dc_bartenders_emp = tot_emp)
+
+dc_servers_emp <- dc_servers %>%
+  select(year, tot_emp) %>%
+  rename(dc_servers_emp = tot_emp)
+
+dc_dishwashers_emp <- dc_dishwashers %>%
+  select(year, tot_emp) %>%
+  rename(dc_dishwashers_emp = tot_emp)
+
+dc_cooks_emp <- dc_cooks %>%
+  select(year, tot_emp) %>%
+  rename(dc_cooks_emp = tot_emp)
+
+dc_tot_emp <- dc_bartenders_emp %>%
+  left_join(dc_servers_emp) %>%
+  left_join(dc_dishwashers_emp) %>%
+  left_join(dc_cooks_emp)
+
+
+#Seattle 
+sea_bartenders_emp <- sea_bartenders %>%
+  select(year, tot_emp) %>%
+  rename(sea_bartenders_emp = tot_emp)
+
+sea_servers_emp <- sea_servers %>%
+  select(year, tot_emp) %>%
+  rename(sea_servers_emp = tot_emp)
+
+sea_dishwashers_emp <- sea_dishwashers %>%
+  select(year, tot_emp) %>%
+  rename(sea_dishwashers_emp = tot_emp)
+
+sea_cooks_emp <- sea_cooks %>%
+  select(year, tot_emp) %>%
+  rename(sea_cooks_emp = tot_emp)
+
+sea_tot_emp <- sea_bartenders_emp %>%
+  left_join(sea_servers_emp) %>%
+  left_join(sea_dishwashers_emp) %>%
+  left_join(sea_cooks_emp)
+
+
+
+#SanFran
+sf_bartenders_emp <- sf_bartenders %>%
+  select(year, tot_emp) %>%
+  rename(sf_bartenders_emp = tot_emp)
+
+sf_servers_emp <- sf_servers %>%
+  select(year, tot_emp) %>%
+  rename(sf_servers_emp = tot_emp)
+
+sf_dishwashers_emp <- sf_dishwashers %>%
+  select(year, tot_emp) %>%
+  rename(sf_dishwashers_emp = tot_emp)
+
+sf_cooks_emp <- sf_cooks %>%
+  select(year, tot_emp) %>%
+  rename(sf_cooks_emp = tot_emp)
+
+sf_tot_emp <- sf_bartenders_emp %>%
+  left_join(sf_servers_emp) %>%
+  left_join(sf_dishwashers_emp) %>%
+  left_join(sf_cooks_emp)
+```
+
+
+2. Create a new column that adds all together and limit dataframe to those columns to combine
+```{r}
+dc_tot_emp <- dc_tot_emp %>%
+  mutate(dc_tot_emp = dc_bartenders_emp + dc_servers_emp + dc_dishwashers_emp + dc_cooks_emp ) %>%
+  select(year, dc_tot_emp)
+
+sea_tot_emp <- sea_tot_emp %>%
+  mutate(sea_tot_emp = sea_bartenders_emp + sea_servers_emp + sea_dishwashers_emp + sea_cooks_emp ) %>%
+  select(year, sea_tot_emp)
+
+sf_tot_emp <- sf_tot_emp %>%
+  mutate(sf_tot_emp = sf_bartenders_emp + sf_servers_emp + sf_dishwashers_emp + sf_cooks_emp ) %>%
+  select(year, sf_tot_emp)
+```
+
+
+3. Merge all dataframes together again :)
+```{r}
+tot_emp <- dc_tot_emp %>%
+  left_join(sea_tot_emp) %>%
+  left_join(sf_tot_emp)
+```
+
+
+4. Write to a csv to make a graph in DataWrapper
+```{r}
+write.csv(tot_emp, "tot_emp.csv")
+```
+
+
+Final graph: https://www.datawrapper.de/_/uInne/ 
+
