@@ -509,6 +509,7 @@ Servers: https://datawrapper.dwcdn.net/tL0Wg/2/
 
 
 ```{r}
+#Front of house employees
 sea_med_income <- sea_bartenders %>%
   select(h_median, year) %>%
   rename(sea_bartenders_median = h_median)
@@ -544,6 +545,9 @@ servers_med_income <- sea_med_income_servers %>%
   left_join(sf_med_income_servers)
 
 write_csv(servers_med_income, "data/servers_med_income.csv")
+
+
+#Back of house employees
 ```
 
 
