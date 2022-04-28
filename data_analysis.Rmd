@@ -510,6 +510,8 @@ Servers: https://datawrapper.dwcdn.net/tL0Wg/2/
 
 ```{r}
 #Front of house employees
+
+#Bartenders
 sea_med_income <- sea_bartenders %>%
   select(h_median, year) %>%
   rename(sea_bartenders_median = h_median)
@@ -528,6 +530,7 @@ bartenders_med_income <- sea_med_income %>%
 
 write_csv(bartenders_med_income, "data/bartenders_med_income.csv")
 
+#Servers
 sea_med_income_servers <- sea_servers %>%
   select(h_median, year) %>%
   rename(sea_bartenders_median = h_median)
@@ -546,8 +549,45 @@ servers_med_income <- sea_med_income_servers %>%
 
 write_csv(servers_med_income, "data/servers_med_income.csv")
 
-
 #Back of house employees
+
+#Cooks
+sea_med_income_boh <- sea_cooks %>%
+  select(h_median, year) %>%
+  rename(sea_cooks_median = h_median)
+
+dc_med_income_boh <- dc_cooks %>%
+  select(h_median, year) %>%
+  rename(dc_cooks_median = h_median)
+
+sf_med_income_boh <- sf_cooks %>%
+  select(h_median, year) %>%
+  rename(sf_cooks_median = h_median)
+
+cooks_med_income <- sea_med_income_boh %>%
+  left_join(dc_med_income_boh) %>%
+  left_join(sf_med_income_boh)
+
+write_csv(cooks_med_income, "data/cooks_med_income.csv")
+
+#Dishwashers
+sea_med_income_dish <- sea_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sea_dishwashers_median = h_median)
+
+dc_med_income_dish <- dc_dishwashers %>%
+  select(h_median, year) %>%
+  rename(dc_dishwashers_median = h_median)
+
+sf_med_income_dish <- sf_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sf_dishwashers_median = h_median)
+
+dishwashers_med_income <- sea_med_income_dish %>%
+  left_join(dc_med_income_dish) %>%
+  left_join(sf_med_income_dish)
+
+write_csv(cooks_med_income, "data/cooks_med_income.csv")
 ```
 
 
