@@ -755,9 +755,17 @@ In all 3 cities, SF and Seattle with no tip credit, and DC with a tip credit, in
 
 #4: Continuation of question 1 - Do back of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
 
-After looking at data for front of house staff (bartenders, servers), we decided to expand our investigation to back of house workers (cooks, dishwashers). We decided to look at BOH workers because they are less affected by a tip credit than FOH staff. The principle is simple: FOH get tips, BOH don't. Our hypothesis was that there shouldn't be too steep of a difference between the median income of BOH staff across the three cities 
+After looking at data for front of house staff (bartenders, servers), we decided to expand our investigation to back of house workers (cooks, dishwashers). We decided to look at BOH workers because they are less affected by a tip credit than FOH staff. 
 
-While each city saw the median income increase, most likely due to an increase in minimum wage, there was never more than two dollars and fifty cents wage gap in the incomes of cooks. For dishwashers, wages were almost identical across the cities, with the largest difference hovering around $1.50. Each of the three cities led in wage or was last in wage at some point in the last 11 years, so the tip credit does not have a significant impact on the wages of BOH workers. Then again, these professions are much less tip-dependent than FOH staff, so that is why the data shows a relative balance between cooks and dishwashers in Seattle, D.C. and San Fran.
+The principle is simple: FOH get tips, BOH don't. Our hypothesis was that there shouldn't be too steep of a difference between the median income of BOH staff across the three cities.
+
+While each city saw the median income increase year-to-year, that is most likely due to an increase in minimum wage; there was never more than two dollars and fifty cents wage gap in the incomes of cooks, and that happened in only one instance. Every other year was at most two dollars. 
+
+For dishwashers, wages were almost identical across the cities, with the largest difference hovering around $1.50. 
+
+Each of the three cities led in wage or was last in wage at some point in the last 11 years, so the tip credit does not have a significant impact on the wages of BOH workers.  
+
+Again, these professions are much less tip-dependent than FOH staff, so that is why the data shows a relative balance between cooks and dishwashers in Seattle, D.C. and San Fran.
 
 We again used a grouped bar graph because it allowed us to compare the median incomes of SEA, DC, SF for the past 11 years side-by-side. The graphs created in datawrapper are included below, along with the code generated for this investigation.
 
