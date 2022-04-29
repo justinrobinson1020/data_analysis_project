@@ -518,8 +518,8 @@ We decided to use a grouped bar graph because it allowed us to compare the media
 
 While our initial question about how the tip credit affected front of house workers is still an interesting one, our findings suggest that minimum wage might be a more driving factor in the wage increase in DC. In 2017, the first year we start to see a jump in earnings for FOH workers in DC, the city also increased the minimum wage a full dollar. That was the most significant increase until 2020/21, when it jumped $1.20. Interestingly, the median wages in DC dropped below those of the other cities during that time. This could be due to the tip credit impacting wages, or could it again be associated with the unpredictability and volatility of the pandemic. 
 
-Bartenders: https://datawrapper.dwcdn.net/yyIeu/3/
-Servers: https://datawrapper.dwcdn.net/tL0Wg/2/
+Bartenders: https://datawrapper.dwcdn.net/yyIeu/4/
+Servers: https://datawrapper.dwcdn.net/tL0Wg/3/
 
 
 ```{r}
@@ -791,12 +791,10 @@ dishwashers_med_income <- sea_med_income_dish %>%
   left_join(dc_med_income_dish) %>%
   left_join(sf_med_income_dish)
 
-write_csv(cooks_med_income, "data/cooks_med_income.csv")
+write_csv(dishwashers_med_income, "data/dishwashers_med_income.csv")
 ```
 
-Findings
-
-Cooks: 
-Dishwashers:
 
 
+Cooks: https://datawrapper.dwcdn.net/rJiyz/2/
+Dishwashers: https://datawrapper.dwcdn.net/Uj1Hk/1/
