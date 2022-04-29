@@ -500,9 +500,23 @@ summary(sf_all_years)
 - This data currently holds a lot of data on occupants, but not more detailed information on areas we are specifically looking into (careers where tip credit matters), so going forward, we may want to incorporate other data to compare with what we've already collected and combined
 
 
-#Question 1: Do workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+#Question 1: Do front of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
 
-#Answer 1: We wanted to look at whether workers in ctities without the tip credit make more than those in cities that pay sub-minimum wage, so we looked at two occupations heavily dependent on tips: bartenders and servers. Our initial investigation found that the answer to the question is NO. D.C. instituted a tip credit in 2018, and since then, their median wages, according to the data gathered from the Bureau of Labor Statistics Occupational Employment and Wage Statistics, have been higher than the wages in Seattle and San Francisco, the two non-tip-credit locales. This trend seemed to flatten a bit in 2021, but that was the during the pandemic, so it's hard to tell if employers were using loans to pay their employees even though restaurants suffered during covid. It could also be that less people were eating out in D.C. than in Seattle and San Fran, further impacting tips and wages. In other words, there are a lot of factors as to why the median income for the two professions in D.C. fell below that of Seattle and San Fran in 2021. We decided to use a grouped bar graph because it allowed us to compare the median incomes of the three cities for the past 11 years. The graphs created in datawrapper are included below, along with the code generated for this investigation.
+Answer 1: We wanted to look at whether workers in cities without the tip credit make more than those in cities that pay sub-minimum wage, so we looked at two occupations heavily dependent on tips: bartenders and servers. Our initial investigation found that the answer to the question is YES and NO. 
+
+Our data started in 2011. In that year, DC's median wage for bartenders, according to the data gathered from the Bureau of Labor Statistics Occupational Employment and Wage Statistics, was about two dollars less than that of San Fran and almost four dollars less than Seattle. This trend - DC trailing the other two cities by two dollars - holds steady up until 2017, the first year DC overtakes San Fran and Seattle.
+
+Since 2017, D.C.'s median wages for bartenders have been higher than the wages in Seattle and San Francisco. 
+
+The trend of DC making up the wage gap in 2017/2018 time period is also true for servers in the three cities.
+
+The trend observed for bartenders and servers seemed to flatten a bit in 2021, but that was the during the pandemic, so it's hard to tell if employers were using loans to pay their employees even though restaurants suffered during covid. It could also be that less people were eating out in D.C. than in Seattle and San Fran, further impacting tips and wages. 
+
+In other words, there are a lot of factors as to why the median income for the two professions in D.C. fell below that of Seattle and San Fran in 2021. 
+
+We decided to use a grouped bar graph because it allowed us to compare the median incomes of the three cities for the past 11 years. The graphs created in datawrapper are included below, along with the code generated for this investigation.
+
+While our initial question about how the tip credit affected front of house workers is still an interesting one, our findings suggest that minimum wage might be a more driving factor in the wage increase in DC. In 2017, the first year we start to see a jump in earnings for FOH workers in DC, the city also increased the minimum wage a full dollar. That was the most significant increase until 2020/21, when it jumped $1.20. Interestingly, the median wages in DC dropped below those of the other cities during that time. This could be due to the tip credit impacting wages, or could it again be associated with the unpredictability and volatility of the pandemic. 
 
 Bartenders: https://datawrapper.dwcdn.net/yyIeu/3/
 Servers: https://datawrapper.dwcdn.net/tL0Wg/2/
@@ -548,46 +562,6 @@ servers_med_income <- sea_med_income_servers %>%
   left_join(sf_med_income_servers)
 
 write_csv(servers_med_income, "data/servers_med_income.csv")
-
-#Back of house employees
-
-#Cooks
-sea_med_income_boh <- sea_cooks %>%
-  select(h_median, year) %>%
-  rename(sea_cooks_median = h_median)
-
-dc_med_income_boh <- dc_cooks %>%
-  select(h_median, year) %>%
-  rename(dc_cooks_median = h_median)
-
-sf_med_income_boh <- sf_cooks %>%
-  select(h_median, year) %>%
-  rename(sf_cooks_median = h_median)
-
-cooks_med_income <- sea_med_income_boh %>%
-  left_join(dc_med_income_boh) %>%
-  left_join(sf_med_income_boh)
-
-write_csv(cooks_med_income, "data/cooks_med_income.csv")
-
-#Dishwashers
-sea_med_income_dish <- sea_dishwashers %>%
-  select(h_median, year) %>%
-  rename(sea_dishwashers_median = h_median)
-
-dc_med_income_dish <- dc_dishwashers %>%
-  select(h_median, year) %>%
-  rename(dc_dishwashers_median = h_median)
-
-sf_med_income_dish <- sf_dishwashers %>%
-  select(h_median, year) %>%
-  rename(sf_dishwashers_median = h_median)
-
-dishwashers_med_income <- sea_med_income_dish %>%
-  left_join(dc_med_income_dish) %>%
-  left_join(sf_med_income_dish)
-
-write_csv(cooks_med_income, "data/cooks_med_income.csv")
 ```
 
 
@@ -774,4 +748,55 @@ DC_difference_FOH_BOH <-mean(dc_final$difference)
 To answer the question (3): How do tip credits affect the wage gap between front and back-of-house workers?
 
 In all 3 cities, SF and Seattle with no tip credit, and DC with a tip credit, in 2021, BOH workers were making slightly more than FOH workers. When averaging this difference across all years, DC FOH and BOH workers make close to the same amount, with only a 7 cent difference. However, in San Francisco, FOH workers make 0.29 cents less and in Seattle, FOH workers make 0.57 cents more. Therefore, this data shows that having a tip credit might even the playing ground between FOH and BOH workers.
+
+
+#4: Continuation of question 1 - Do back of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+
+```{r}
+#Back of house employees
+
+#Cooks
+sea_med_income_boh <- sea_cooks %>%
+  select(h_median, year) %>%
+  rename(sea_cooks_median = h_median)
+
+dc_med_income_boh <- dc_cooks %>%
+  select(h_median, year) %>%
+  rename(dc_cooks_median = h_median)
+
+sf_med_income_boh <- sf_cooks %>%
+  select(h_median, year) %>%
+  rename(sf_cooks_median = h_median)
+
+cooks_med_income <- sea_med_income_boh %>%
+  left_join(dc_med_income_boh) %>%
+  left_join(sf_med_income_boh)
+
+write_csv(cooks_med_income, "data/cooks_med_income.csv")
+
+#Dishwashers
+sea_med_income_dish <- sea_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sea_dishwashers_median = h_median)
+
+dc_med_income_dish <- dc_dishwashers %>%
+  select(h_median, year) %>%
+  rename(dc_dishwashers_median = h_median)
+
+sf_med_income_dish <- sf_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sf_dishwashers_median = h_median)
+
+dishwashers_med_income <- sea_med_income_dish %>%
+  left_join(dc_med_income_dish) %>%
+  left_join(sf_med_income_dish)
+
+write_csv(cooks_med_income, "data/cooks_med_income.csv")
+```
+
+Findings
+
+Cooks: 
+Dishwashers:
+
 
