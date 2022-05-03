@@ -1,35 +1,12 @@
+Question #5: How have the restaurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
+
+Answer: To answer this question, I graphed the total employment numbers for each cities over the past 10 years:
 
 
+Graph of total employment numbers: https://www.datawrapper.de/_/uInne/ 
+Graph of total employment (rate per 1000 people): https://www.datawrapper.de/_/KyK5y/ 
 
-Question: How have the restarurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
-
-to do:
-- combine total employment for all workers (bartenderes, servers, cooks, dishwashers) for each year
-- make a column for each city and combine into one dataframe
-- graph dataframe to compare employment across cities
-
-1. Read in all data frames
-```{r}
-sea_bartenders <- read_csv("data/sea_bartenders.csv")
-sea_cooks <- read_csv("data/sea_cooks.csv")
-sea_dishwashers <- read_csv("data/sea_dishwashers.csv")
-sea_servers <- read_csv("data/sea_servers.csv")
-
-
-dc_bartenders <- read_csv("data/dc_bartenders.csv")
-dc_cooks <- read_csv("data/dc_cooks.csv")
-dc_dishwashers <- read_csv("data/dc_dishwashers.csv")
-dc_servers <- read_csv("data/dc_servers.csv")
-
-
-sf_bartenders <- read_csv("data/sf_bartenders.csv")
-sf_cooks <- read_csv("data/sf_cooks.csv")
-sf_dishwashers <- read_csv("data/sf_dishwashers.csv")
-sf_servers <- read_csv("data/sf_servers.csv")
-
-```
-
-
+As seen in these charts, the restaurant industry in San Francisco had been steady (but at a slow decline). The restaurant industry in DC was increasing slowly and the restaurant industry in Seattle continued at a steady rate. However, the restaurant industry employment in all three cities tanked when COVID hit in 2020. Knowing this can make it easier to understand potential wage increases and decreases, especially during COVID when employment shrunk in all three cities. 
 
 
 
@@ -150,7 +127,4 @@ tot_emp <- dc_tot_emp %>%
 ```{r}
 write.csv(tot_emp, "tot_emp.csv")
 ```
-
-
-Final graph: https://www.datawrapper.de/_/uInne/ 
 
