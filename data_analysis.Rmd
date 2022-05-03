@@ -1,7 +1,7 @@
 ---
-title: "lab_11"
-author: "sean mussenden"
-date: "8/26/2021"
+title: "Data Analysis Project"
+author: "Justin Robinson, Hanna Zakharenko, Ian Decker"
+date: "5/3/2022"
 output: html_document
 ---
 
@@ -17,8 +17,8 @@ library(janitor)
 
 # Load and Clean Data
 
-##Seperate out data for D.C. and save to new csv file
 ```{r}
+##Seperate out D.C. data and save to new csv file for each year
 for (year in 10:18){
   inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
   outputFilename <- str_c("data/DC/dc_may_20", toString(year), ".csv")
@@ -43,10 +43,8 @@ for (year in 19:21){
     rename(AREA_NAME = AREA_TITLE) %>% 
     write_csv(outputFilename)
 }
-```
 
-##Seperate out San Francisco
-```{r}
+##Seperate out San Francisco data and save to new csv file for each year
 for (year in 10:18){
   inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year),".csv")
   outputFilename <- str_c("data/SF/sf_may_20", toString(year), ".csv")
@@ -71,10 +69,9 @@ for (year in 19:21){
     rename(AREA_NAME = AREA_TITLE) %>% 
     write_csv(outputFilename)
 }
-```
 
-##Seperate out Seattle
-```{r}
+
+##Seperate out Seattle data and save to new csv file for each year
 for (year in 10:17){
   inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year),".csv")
   outputFilename <- str_c("data/SEA/sea_may_20", toString(year), ".csv")
@@ -104,6 +101,7 @@ for (year in 19:21){
 
 ##Stitch every year of DC data together
 ```{r}
+
 dc_all_years <- tibble()
 
 for (year in 2011:2021){
@@ -153,6 +151,7 @@ sf_all_years %>%
 
 ##Clean up column names and fix data types
 ```{r}
+###DC
 dc_all_years <- dc_all_years %>% 
   clean_names() %>% 
   mutate(tot_emp = as.numeric(tot_emp)) %>% 
@@ -172,9 +171,8 @@ dc_all_years <- dc_all_years %>%
   mutate(a_median = as.numeric(a_median)) %>% 
   mutate(a_pct75 = as.numeric(a_pct75)) %>% 
   mutate(a_pct90 = as.numeric(a_pct90))
-```
 
-```{r}
+###SEA
 sea_all_years <- sea_all_years %>% 
   clean_names() %>% 
   mutate(tot_emp = as.numeric(tot_emp)) %>% 
@@ -194,9 +192,8 @@ sea_all_years <- sea_all_years %>%
   mutate(a_median = as.numeric(a_median)) %>% 
   mutate(a_pct75 = as.numeric(a_pct75)) %>% 
   mutate(a_pct90 = as.numeric(a_pct90))
-```
 
-```{r}
+###SF
 sf_all_years <- sf_all_years %>% 
   clean_names() %>% 
   mutate(tot_emp = as.numeric(tot_emp)) %>% 
@@ -250,8 +247,6 @@ dc_servers <- dc_all_years %>%
   ) %>% 
   write_csv("data/dc_servers.csv")
 
-	
-
 dc_counter_service <- dc_all_years %>% 
   filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
   group_by(year) %>% 
@@ -281,7 +276,6 @@ dc_dishwashers <- dc_all_years %>%
     jobs_1000
   ) %>% 
   write_csv("data/dc_dishwashers.csv")
-
 
 dc_cooks <- dc_all_years %>% 
   filter(occ_title== "Cooks, Restaurant") %>% 
@@ -314,7 +308,7 @@ dc_head_chefs <- dc_all_years %>%
   write_csv("data/dc_head_chefs.csv")
 ```
 
-##Data frames for Seattle restaurant occupations
+## Create data frames for Seattle restaurant occupations and write to csv
 ```{r}
 sea_bartenders <- sea_all_years %>% 
   filter(occ_title== "Bartenders") %>% 
@@ -407,7 +401,7 @@ sea_head_chefs <- sea_all_years %>%
   write_csv("data/sea_head_chefs.csv")
 ```
 
-##Data frames for San Francisco restaurant occupations
+##Create data frames for San Francisco restaurant occupations and write to csva
 ```{r}
 sf_bartenders <- sf_all_years %>% 
   filter(occ_title== "Bartenders") %>% 
@@ -588,7 +582,7 @@ write_csv(servers_med_income, "data/servers_med_income.csv")
 
 #Question 2: How are FOH workers across the earning spectrum affected by the tip credit (if at all)
 
-To answer this question I generated line graphs (viewable via "webpage/index.html") for servers and bartenders in each city to get a sense of the gaps between income levels and how wages have changed over time. 
+To answer this question I generated line graphs (viewable via "webpage/foh.html") for servers and bartenders in each city to get a sense of the gaps between income levels and how wages have changed over time based on the data frames created earlier for each occupation in each city (dc_bartenders, dc_servers, sf_bartenders, sf_servers, sea_bartenders, sea_servers).
 
 I also collected minimum wage data from the web for each city (https://www.laborlawcenter.com/state-minimum-wage-rates, https://sfgov.org/olse/historical-wage-rates-definition-government-supported-employee, https://library.municode.com/wa/seattle/codes/municipal_code?nodeId=TIT14HURI_CH14.19MIWAMICORAEMPEWOSE_14.19.030HOMIWACH1EM, 
 https://www.seattle.gov/documents/Departments/LaborStandards/OLS-MW-multiyearChart2022%20%28002%29.pdf)
@@ -605,9 +599,6 @@ Looking at the chart, in each city workers in the bottom 25th and 10th percentil
 
 
 ## comparing bartenders and servers (FOH) with BOH (cooks and dishwashers)
-```{r}
-sea_all_years<- read_csv("https://raw.githubusercontent.com/justinrobinson1020/data_analysis_project/main/data/SEA/sea_all_years.csv")
-```
 1. Create a combined table with year, median, and total employees for FOH workers in each city (bartenders and servers)
 
 ###Seattle:
@@ -709,8 +700,6 @@ sf_BOH <- sf_cooks_to_combine %>%
 sf_BOH <-sf_BOH %>%
   mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
 ```
-
-
 
 ###DC 
 ```{r}
@@ -832,13 +821,16 @@ dishwashers_med_income <- sea_med_income_dish %>%
 write_csv(dishwashers_med_income, "data/dishwashers_med_income.csv")
 ```
 
-Question: How have the restarurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
+#Question #5: How have the restaurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
 
-to do:
-- combine total employment for all workers (bartenderes, servers, cooks, dishwashers) for each year
-- make a column for each city and combine into one dataframe
-- graph dataframe to compare employment across cities
+##Answer: To answer this question, I graphed the total employment numbers for each cities over the past 10 years:
 
+
+Graph of total employment numbers: https://www.datawrapper.de/_/uInne/ 
+Graph of total employment (rate per 1000 people): https://www.datawrapper.de/_/KyK5y/ 
+Side by side comparison: webpage/total_employment.html
+
+As seen in these charts, the restaurant industry in San Francisco had been steady (but at a slow decline). The restaurant industry in DC was increasing slowly and the restaurant industry in Seattle continued at a steady rate. However, the restaurant industry employment in all three cities tanked when COVID hit in 2020. Knowing this can make it easier to understand potential wage increases and decreases, especially during COVID when employment shrunk in all three cities. 
 
 
 
@@ -852,15 +844,15 @@ dc_bartenders_emp <- dc_bartenders %>%
 dc_servers_emp <- dc_servers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(dc_servers_emp = tot_emp) %>%
-  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+  rename(dc_servers_emp_per_1000 = jobs_1000)
 dc_dishwashers_emp <- dc_dishwashers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(dc_dishwashers_emp = tot_emp) %>%
-  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+  rename(dc_dishwashers_emp_per_1000 = jobs_1000)
 dc_cooks_emp <- dc_cooks %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(dc_cooks_emp = tot_emp) %>%
-  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+  rename(dc_cooks_emp_per_1000 = jobs_1000)
 dc_tot_emp <- dc_bartenders_emp %>%
   left_join(dc_servers_emp) %>%
   left_join(dc_dishwashers_emp) %>%
@@ -873,15 +865,15 @@ sea_bartenders_emp <- sea_bartenders %>%
 sea_servers_emp <- sea_servers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sea_servers_emp = tot_emp) %>%
-  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+  rename(sea_servers_emp_per_1000 = jobs_1000)
 sea_dishwashers_emp <- sea_dishwashers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sea_dishwashers_emp = tot_emp) %>%
-  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+  rename(sea_dishwashers_emp_per_1000 = jobs_1000)
 sea_cooks_emp <- sea_cooks %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sea_cooks_emp = tot_emp) %>%
-  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+  rename(sea_cooks_emp_per_1000 = jobs_1000)
 sea_tot_emp <- sea_bartenders_emp %>%
   left_join(sea_servers_emp) %>%
   left_join(sea_dishwashers_emp) %>%
@@ -894,15 +886,15 @@ sf_bartenders_emp <- sf_bartenders %>%
 sf_servers_emp <- sf_servers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sf_servers_emp = tot_emp) %>%
-  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+  rename(sf_servers_emp_per_1000 = jobs_1000)
 sf_dishwashers_emp <- sf_dishwashers %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sf_dishwashers_emp = tot_emp) %>%
-  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+  rename(sf_dishwashers_emp_per_1000 = jobs_1000)
 sf_cooks_emp <- sf_cooks %>%
   select(year, tot_emp, jobs_1000) %>%
   rename(sf_cooks_emp = tot_emp) %>%
-  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+  rename(sf_cooks_emp_per_1000 = jobs_1000)
 sf_tot_emp <- sf_bartenders_emp %>%
   left_join(sf_servers_emp) %>%
   left_join(sf_dishwashers_emp) %>%
@@ -939,6 +931,3 @@ tot_emp <- dc_tot_emp %>%
 ```{r}
 write.csv(tot_emp, "tot_emp.csv")
 ```
-
-
-Final graph: https://www.datawrapper.de/_/uInne/ 
