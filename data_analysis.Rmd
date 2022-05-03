@@ -230,7 +230,8 @@ dc_bartenders <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_bartenders.csv")
 
@@ -244,7 +245,8 @@ dc_servers <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_servers.csv")
 
@@ -260,7 +262,8 @@ dc_counter_service <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_counter_service.csv")
 
@@ -274,7 +277,8 @@ dc_dishwashers <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_dishwashers.csv")
 
@@ -289,7 +293,8 @@ dc_cooks <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_cooks.csv")
 
@@ -303,7 +308,8 @@ dc_head_chefs <- dc_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/dc_head_chefs.csv")
 ```
@@ -320,7 +326,8 @@ sea_bartenders <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_bartenders.csv")
 
@@ -334,7 +341,8 @@ sea_servers <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_servers.csv")
 
@@ -348,7 +356,8 @@ sea_counter_service <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_counter_service.csv")
 
@@ -362,7 +371,8 @@ sea_dishwashers <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_dishwashers.csv")
 
@@ -376,7 +386,8 @@ sea_cooks <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_cooks.csv")
 
@@ -390,7 +401,8 @@ sea_head_chefs <- sea_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sea_head_chefs.csv")
 ```
@@ -407,7 +419,8 @@ sf_bartenders <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_bartenders.csv")
 
@@ -421,7 +434,8 @@ sf_servers <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_servers.csv")
 
@@ -435,7 +449,8 @@ sf_counter_service <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_counter_service.csv")
 
@@ -449,7 +464,8 @@ sf_dishwashers <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_dishwashers.csv")
 
@@ -463,7 +479,8 @@ sf_cooks <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_cooks.csv")
 
@@ -477,7 +494,8 @@ sf_head_chefs <- sf_all_years %>%
     h_pct75,
     h_pct90,
     h_mean,
-    tot_emp
+    tot_emp,
+    jobs_1000
   ) %>% 
   write_csv("data/sf_head_chefs.csv")
 ```
@@ -568,7 +586,7 @@ write_csv(servers_med_income, "data/servers_med_income.csv")
 ```
 
 
-#Question 2: How are workers across the earning spectrum affected by the tip credit (if at all)
+#Question 2: How are FOH workers across the earning spectrum affected by the tip credit (if at all)
 
 To answer this question I generated line graphs (viewable via "webpage/index.html") for servers and bartenders in each city to get a sense of the gaps between income levels and how wages have changed over time. 
 
@@ -753,7 +771,7 @@ To answer the question (3): How do tip credits affect the wage gap between front
 In all 3 cities, SF and Seattle with no tip credit, and DC with a tip credit, in 2021, BOH workers were making slightly more than FOH workers. When averaging this difference across all years, DC FOH and BOH workers make close to the same amount, with only a 7 cent difference. However, in San Francisco, FOH workers make 0.29 cents less and in Seattle, FOH workers make 0.57 cents more. Therefore, this data shows that having a tip credit might even the playing ground between FOH and BOH workers.
 
 
-#4: Continuation of question 1 - Do back of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+# Question 4: Continuation of question 1 - Do back of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
 
 After looking at data for front of house staff (bartenders, servers), we decided to expand our investigation to back of house workers (cooks, dishwashers). We decided to look at BOH workers because they are less affected by a tip credit than FOH staff. 
 
@@ -813,3 +831,114 @@ dishwashers_med_income <- sea_med_income_dish %>%
 
 write_csv(dishwashers_med_income, "data/dishwashers_med_income.csv")
 ```
+
+Question: How have the restarurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
+
+to do:
+- combine total employment for all workers (bartenderes, servers, cooks, dishwashers) for each year
+- make a column for each city and combine into one dataframe
+- graph dataframe to compare employment across cities
+
+
+
+
+1. Create dataframes with each total employment for DC workers and combine
+```{r}
+#DC 
+dc_bartenders_emp <- dc_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_bartenders_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+dc_servers_emp <- dc_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_servers_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+dc_dishwashers_emp <- dc_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_dishwashers_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+dc_cooks_emp <- dc_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_cooks_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+dc_tot_emp <- dc_bartenders_emp %>%
+  left_join(dc_servers_emp) %>%
+  left_join(dc_dishwashers_emp) %>%
+  left_join(dc_cooks_emp)
+#Seattle 
+sea_bartenders_emp <- sea_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_bartenders_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+sea_servers_emp <- sea_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_servers_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+sea_dishwashers_emp <- sea_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_dishwashers_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+sea_cooks_emp <- sea_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_cooks_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+sea_tot_emp <- sea_bartenders_emp %>%
+  left_join(sea_servers_emp) %>%
+  left_join(sea_dishwashers_emp) %>%
+  left_join(sea_cooks_emp)
+#SanFran
+sf_bartenders_emp <- sf_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_bartenders_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+sf_servers_emp <- sf_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_servers_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+sf_dishwashers_emp <- sf_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_dishwashers_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+sf_cooks_emp <- sf_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_cooks_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+sf_tot_emp <- sf_bartenders_emp %>%
+  left_join(sf_servers_emp) %>%
+  left_join(sf_dishwashers_emp) %>%
+  left_join(sf_cooks_emp)
+```
+
+
+2. Create a new column that adds all together and limit dataframe to those columns to combine
+```{r}
+dc_tot_emp <- dc_tot_emp %>%
+  mutate(dc_tot_emp = dc_bartenders_emp + dc_servers_emp + dc_dishwashers_emp + dc_cooks_emp ) %>%
+  mutate(dc_tot_emp_per_1000 = dc_bartenders_emp_per_1000 + dc_servers_emp_per_1000 + dc_dishwashers_emp_per_1000 + dc_cooks_emp_per_1000 ) %>%
+  select(year, dc_tot_emp, dc_tot_emp_per_1000)
+sea_tot_emp <- sea_tot_emp %>%
+  mutate(sea_tot_emp = sea_bartenders_emp + sea_servers_emp + sea_dishwashers_emp + sea_cooks_emp ) %>%
+  mutate(sea_tot_emp_per_1000 = sea_bartenders_emp_per_1000 + sea_servers_emp_per_1000 + sea_dishwashers_emp_per_1000 + sea_cooks_emp_per_1000 ) %>%
+  select(year, sea_tot_emp, sea_tot_emp_per_1000)
+sf_tot_emp <- sf_tot_emp %>%
+  mutate(sf_tot_emp = sf_bartenders_emp + sf_servers_emp + sf_dishwashers_emp + sf_cooks_emp ) %>%
+  mutate(sf_tot_emp_per_1000 = sf_bartenders_emp_per_1000 + sf_servers_emp_per_1000 + sf_dishwashers_emp_per_1000 + sf_cooks_emp_per_1000 ) %>%
+  select(year, sf_tot_emp, sf_tot_emp_per_1000)
+```
+
+
+3. Merge all dataframes together again :)
+```{r}
+tot_emp <- dc_tot_emp %>%
+  left_join(sea_tot_emp) %>%
+  left_join(sf_tot_emp)
+```
+
+
+4. Write to a csv to make a graph in DataWrapper
+```{r}
+write.csv(tot_emp, "tot_emp.csv")
+```
+
+
+Final graph: https://www.datawrapper.de/_/uInne/ 
