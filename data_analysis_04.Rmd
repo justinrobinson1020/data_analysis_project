@@ -38,20 +38,24 @@ sf_servers <- read_csv("data/sf_servers.csv")
 
 #DC 
 dc_bartenders_emp <- dc_bartenders %>%
-  select(year, tot_emp) %>%
-  rename(dc_bartenders_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_bartenders_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
 
 dc_servers_emp <- dc_servers %>%
-  select(year, tot_emp) %>%
-  rename(dc_servers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_servers_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
 
 dc_dishwashers_emp <- dc_dishwashers %>%
-  select(year, tot_emp) %>%
-  rename(dc_dishwashers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_dishwashers_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
 
 dc_cooks_emp <- dc_cooks %>%
-  select(year, tot_emp) %>%
-  rename(dc_cooks_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_cooks_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
 
 dc_tot_emp <- dc_bartenders_emp %>%
   left_join(dc_servers_emp) %>%
@@ -61,20 +65,24 @@ dc_tot_emp <- dc_bartenders_emp %>%
 
 #Seattle 
 sea_bartenders_emp <- sea_bartenders %>%
-  select(year, tot_emp) %>%
-  rename(sea_bartenders_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_bartenders_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
 
 sea_servers_emp <- sea_servers %>%
-  select(year, tot_emp) %>%
-  rename(sea_servers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_servers_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
 
 sea_dishwashers_emp <- sea_dishwashers %>%
-  select(year, tot_emp) %>%
-  rename(sea_dishwashers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_dishwashers_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
 
 sea_cooks_emp <- sea_cooks %>%
-  select(year, tot_emp) %>%
-  rename(sea_cooks_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_cooks_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
 
 sea_tot_emp <- sea_bartenders_emp %>%
   left_join(sea_servers_emp) %>%
@@ -85,20 +93,24 @@ sea_tot_emp <- sea_bartenders_emp %>%
 
 #SanFran
 sf_bartenders_emp <- sf_bartenders %>%
-  select(year, tot_emp) %>%
-  rename(sf_bartenders_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_bartenders_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
 
 sf_servers_emp <- sf_servers %>%
-  select(year, tot_emp) %>%
-  rename(sf_servers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_servers_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
 
 sf_dishwashers_emp <- sf_dishwashers %>%
-  select(year, tot_emp) %>%
-  rename(sf_dishwashers_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_dishwashers_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
 
 sf_cooks_emp <- sf_cooks %>%
-  select(year, tot_emp) %>%
-  rename(sf_cooks_emp = tot_emp)
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_cooks_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
 
 sf_tot_emp <- sf_bartenders_emp %>%
   left_join(sf_servers_emp) %>%
@@ -111,15 +123,18 @@ sf_tot_emp <- sf_bartenders_emp %>%
 ```{r}
 dc_tot_emp <- dc_tot_emp %>%
   mutate(dc_tot_emp = dc_bartenders_emp + dc_servers_emp + dc_dishwashers_emp + dc_cooks_emp ) %>%
-  select(year, dc_tot_emp)
+  mutate(dc_tot_emp_per_1000 = dc_bartenders_emp_per_1000 + dc_servers_emp_per_1000 + dc_dishwashers_emp_per_1000 + dc_cooks_emp_per_1000 ) %>%
+  select(year, dc_tot_emp, dc_tot_emp_per_1000)
 
 sea_tot_emp <- sea_tot_emp %>%
   mutate(sea_tot_emp = sea_bartenders_emp + sea_servers_emp + sea_dishwashers_emp + sea_cooks_emp ) %>%
-  select(year, sea_tot_emp)
+  mutate(sea_tot_emp_per_1000 = sea_bartenders_emp_per_1000 + sea_servers_emp_per_1000 + sea_dishwashers_emp_per_1000 + sea_cooks_emp_per_1000 ) %>%
+  select(year, sea_tot_emp, sea_tot_emp_per_1000)
 
 sf_tot_emp <- sf_tot_emp %>%
   mutate(sf_tot_emp = sf_bartenders_emp + sf_servers_emp + sf_dishwashers_emp + sf_cooks_emp ) %>%
-  select(year, sf_tot_emp)
+  mutate(sf_tot_emp_per_1000 = sf_bartenders_emp_per_1000 + sf_servers_emp_per_1000 + sf_dishwashers_emp_per_1000 + sf_cooks_emp_per_1000 ) %>%
+  select(year, sf_tot_emp, sf_tot_emp_per_1000)
 ```
 
 
