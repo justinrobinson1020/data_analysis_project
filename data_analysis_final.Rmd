@@ -1,0 +1,969 @@
+---
+title: "Data Analysis Project"
+author: "Justin Robinson, Hanna Zakharenko, Ian Decker"
+date: "5/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#Introduction
+After a contentious battle in 2018[https://www.restaurantdive.com/news/coalition-launches-ballot-initiative-to-end-the-tipped-minimum-wage-in-dc/607011/#:~:text=Initiative%2077%2C%20a%20similar%20initiative,is%20more%20likely%20to%20succeed.], voters in Washington, D.C. are poised to once again eliminate the city’s tip credit system this November. After a successful campaign to have the Council overturn the first ballot initiative by restaurant owners, operators, and employees under the slogan “Save Our Tips,” activists have responded by rebranding their proposal including language that promises the new law will “ensure all tipped workers receive DC's full minimum wage of at least $15.20 plus tips on top.”[https://betterrestaurantsdc.org/dcboe-issues-initiative-82-petitions/] 
+
+Our analysis looks at wage data for restaurant workers in three major cities with thriving restaurant scenes, San Francisco and Seattle (with no tip credits), and DC, which allows the sub-minimum wage to evaluate the claims of supporters and opponents of changing the law. While voters may be convinced that they are casting a ballot to help tipped workers, the data suggests that may not actually be the case.
+
+#Our data: the pros and cons
+All of our data was collected from the Bureau of Labor Statistics’ (BLS) Occupational Employment and Wage Statistics (OEWS) survey[https://www.bls.gov/oes/tables.htm], and started in 2011. Collecting wage data for tipped occupations is already inherently difficult as these wages are often self-reported by the employee who has an obvious incentive to underreport their earnings. Our data is further complicated by the way in which BLS collects its data and the unique status of Washington, D.C. as a federal district.
+
+In an ideal world, we would be able to collect data on restaurants that operate specifically within each city, BLS however, collects data for either metropolitan areas or states. This means that San Francisco also includes the surrounding counties of Alameda, Contra Costa, Marin, and San Mateo. Seattle’s home of King County is joined by Snohomish County to the north and Pierce County to the south. Washington, D.C. on the other hand does not face this limitation as BLS includes D.C. in its state data giving a much more precise level of specificity. D.C. is also included in a metro area that includes areas of Maryland, Virginia, and West Virginia that surround it.
+
+We chose to use the state data rather than the metro area dataset because while every state in the DC area allows the tip credit, there are still very large differences in their minimum wage laws (e.g. West Virginia follows the federal minimum[https://fred.stlouisfed.org/series/STTMINWGWV] while D.C. has recently raised its minimum wage above $15), whereas the metro areas around San Francisco and Seattle are all bound by state law not to use tip credits, with many of them paying similar minimum wages above the minimum set by the state. We think that this gives the closest approximation we can have to an “apples to apples” comparison of the three cities, and when performing calculations regarding minimum wage we present minimums for Seattle and San Francisco as a range from the low of the state minimum to the high in each city or defer to the state minimum as a baseline.
+
+Although we're unable to look at specificities within the workplace, if given more time, we could identify how restaurants are changing their employment based on minimum wage requirements. By creating a survey to collect data on how restaurants employ and pay workers (e.g. decreasing employment when minimum wage rises, implementing service charges, etc.), we could learn more about why we are seeing these numbers in the BLS data.
+
+One final quirk of the data lies in the way each city implements minimum wage changes. In Seattle[https://squareup.com/us/en/townsquare/guide-to-washington-minimum-wage#:~:text=Washington%20state%20minimum%20wage%20is,January%201%2C%202022%20to%20%2414.49.] and San Francisco[https://www.ssf.net/departments/city-manager/local-minimum-wage], annual increases take effect on January 1st of each year. D.C. however, implements its wage increases on July 1 of each year, leading to a slight lag in wage increases which can be observed in the chart of wages over time. Looking at the bottom 10% of earners, the increase to the new minimum wage is not registered until the following year after a full year of earning the new higher minimum.
+
+Despite these drawbacks, BLS’s long history of collecting this data, and their rigorous statistical standards convince us that this represents the most accurate data set for gaining an understanding of wage trends for hospitality workers in these three cities.
+
+##Load and Clean Data 
+
+
+###Libraries
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+###Load and Clean
+```{r}
+##Seperate out D.C. data and save to new csv file for each year
+for (year in 10:18){
+  inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/DC/dc_may_20", toString(year), ".csv")
+  
+  all_states <- read.csv(inputFilename)
+  all_states <- all_states %>% 
+    filter(AREA == 11) %>%
+    rename(AREA_NAME = STATE) %>% 
+    write_csv(outputFilename)
+}
+
+#Column format changes in 2019
+for (year in 19:21){
+  inputFilename <- str_c("data/state_csv/state_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/DC/dc_may_20", toString(year), ".csv")
+  
+  all_states <- read.csv(inputFilename)
+  names(all_states) <- toupper(names(all_states))
+  
+  all_states <- all_states %>% 
+    filter(AREA == 11) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+}
+
+##Seperate out San Francisco data and save to new csv file for each year
+for (year in 10:18){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year),".csv")
+  outputFilename <- str_c("data/SF/sf_may_20", toString(year), ".csv")
+  
+  all_areas <- read.csv(inputFilename)
+  
+  all_areas %>% 
+    filter(!is.na(str_match(AREA_NAME, "San Francisco"))) %>%
+    write_csv(outputFilename)
+}
+
+#Column format changes in 2019
+for (year in 19:21){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/SF/sf_may_20", toString(year), ".csv")
+  
+  all_areas <- read.csv(inputFilename)
+  names(all_areas) <- toupper(names(all_areas))
+  
+  all_areas %>% 
+    filter(!is.na(str_match(AREA_TITLE, "San Francisco"))) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+}
+
+
+##Seperate out Seattle data and save to new csv file for each year
+for (year in 10:17){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year),".csv")
+  outputFilename <- str_c("data/SEA/sea_may_20", toString(year), ".csv")
+  all_areas <- read.csv(inputFilename)
+  
+  all_areas %>% 
+    filter(!is.na(str_match(AREA_NAME, "Seattle"))) %>%
+    write_csv(outputFilename)
+}
+
+#Column format changes in 2019
+for (year in 19:21){
+  for(i in 1:3){
+  inputFilename <- str_c("data/metro_areas_csv/metro_may_20", toString(year), ".csv")
+  outputFilename <- str_c("data/SEA/sea_may_20", toString(year), ".csv")
+  
+  all_areas <- read.csv(inputFilename)
+  names(all_areas) <- toupper(names(all_areas))
+  
+  all_areas %>% 
+    filter(!is.na(str_match(AREA_TITLE, "Seattle"))) %>%
+    rename(AREA_NAME = AREA_TITLE) %>% 
+    write_csv(outputFilename)
+  }
+}
+```
+
+##S#titch every year of DC data together
+```{r}
+
+dc_all_years <- tibble()
+
+for (year in 2011:2021){
+  next_year <- read_csv(str_c("data/DC/dc_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  dc_all_years <- dc_all_years %>% bind_rows(next_year)
+}
+
+dc_all_years %>% 
+  write_csv("data/DC/dc_all_years.csv")
+```
+
+###Stitch every year of Seattle data together
+```{r}
+sea_all_years <- tibble()
+
+for (year in 2011:2021){
+  next_year <- read_csv(str_c("data/SEA/sea_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  sea_all_years <- sea_all_years %>% bind_rows(next_year)
+}
+
+sea_all_years %>% 
+  write_csv("data/SEA/sea_all_years.csv")
+
+```
+
+###Stitch every year of San Francisco data together
+```{r}
+sf_all_years <- tibble()
+
+for (year in 2011:2021){
+  print(year)
+  next_year <- read_csv(str_c("data/SF/sf_may_", year, ".csv"))
+  next_year <- next_year %>% 
+    mutate(YEAR = year)
+  sf_all_years <- sf_all_years %>% bind_rows(next_year)
+}
+
+sf_all_years %>% 
+  write_csv("data/SF/sf_all_years.csv")
+
+```
+
+
+###Clean up column names and fix data types
+```{r}
+###DC
+dc_all_years <- dc_all_years %>% 
+  clean_names() %>% 
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
+  mutate(h_mean = as.numeric(h_mean)) %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>% 
+  mutate(mean_prse = as.numeric(mean_prse)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_pct25 = as.numeric(h_pct25)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_median = as.numeric(h_median)) %>% 
+  mutate(h_pct75 = as.numeric(h_pct75)) %>% 
+  mutate(h_pct90 = as.numeric(h_pct90)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_pct25 = as.numeric(a_pct25)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_median = as.numeric(a_median)) %>% 
+  mutate(a_pct75 = as.numeric(a_pct75)) %>% 
+  mutate(a_pct90 = as.numeric(a_pct90))
+
+###SEA
+sea_all_years <- sea_all_years %>% 
+  clean_names() %>% 
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
+  mutate(h_mean = as.numeric(h_mean)) %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>% 
+  mutate(mean_prse = as.numeric(mean_prse)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_pct25 = as.numeric(h_pct25)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_median = as.numeric(h_median)) %>% 
+  mutate(h_pct75 = as.numeric(h_pct75)) %>% 
+  mutate(h_pct90 = as.numeric(h_pct90)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_pct25 = as.numeric(a_pct25)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_median = as.numeric(a_median)) %>% 
+  mutate(a_pct75 = as.numeric(a_pct75)) %>% 
+  mutate(a_pct90 = as.numeric(a_pct90))
+
+###SF
+sf_all_years <- sf_all_years %>% 
+  clean_names() %>% 
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(jobs_1000 = as.numeric(jobs_1000)) %>% 
+  mutate(h_mean = as.numeric(h_mean)) %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>% 
+  mutate(mean_prse = as.numeric(mean_prse)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_pct25 = as.numeric(h_pct25)) %>% 
+  mutate(h_pct10 = as.numeric(h_pct10)) %>% 
+  mutate(h_median = as.numeric(h_median)) %>% 
+  mutate(h_pct75 = as.numeric(h_pct75)) %>% 
+  mutate(h_pct90 = as.numeric(h_pct90)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_pct25 = as.numeric(a_pct25)) %>% 
+  mutate(a_pct10 = as.numeric(a_pct10)) %>% 
+  mutate(a_median = as.numeric(a_median)) %>% 
+  mutate(a_pct75 = as.numeric(a_pct75)) %>% 
+  mutate(a_pct90 = as.numeric(a_pct90))
+```
+
+###Create data frames for DC restaurant occupations and write to csv
+```{r}
+dc_bartenders <- dc_all_years %>% 
+  filter(occ_title== "Bartenders") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_bartenders.csv")
+
+dc_servers <- dc_all_years %>% 
+  filter(occ_title== "Waiters and Waitresses") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_servers.csv")
+
+dc_counter_service <- dc_all_years %>% 
+  filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_counter_service.csv")
+
+dc_dishwashers <- dc_all_years %>% 
+  filter(occ_title== "Dishwashers") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_dishwashers.csv")
+
+dc_cooks <- dc_all_years %>% 
+  filter(occ_title== "Cooks, Restaurant") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_cooks.csv")
+
+dc_head_chefs <- dc_all_years %>% 
+  filter(occ_title== "Chefs and Head Cooks") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/dc_head_chefs.csv")
+```
+
+###Create data frames for Seattle restaurant occupations and write to csv
+```{r}
+sea_bartenders <- sea_all_years %>% 
+  filter(occ_title== "Bartenders") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_bartenders.csv")
+
+sea_servers <- sea_all_years %>% 
+  filter(occ_title== "Waiters and Waitresses") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_servers.csv")
+
+sea_counter_service <- sea_all_years %>% 
+  filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_counter_service.csv")
+
+sea_dishwashers <- sea_all_years %>% 
+  filter(occ_title== "Dishwashers") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_dishwashers.csv")
+
+sea_cooks <- sea_all_years %>% 
+  filter(occ_title== "Cooks, Restaurant") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_cooks.csv")
+
+sea_head_chefs <- sea_all_years %>% 
+  filter(occ_title == "Chefs and Head Cooks") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sea_head_chefs.csv")
+```
+
+###Create data frames for San Francisco restaurant occupations and write to csva
+```{r}
+sf_bartenders <- sf_all_years %>% 
+  filter(occ_title== "Bartenders") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_bartenders.csv")
+
+sf_servers <- sf_all_years %>% 
+  filter(occ_title== "Waiters and Waitresses") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_servers.csv")
+
+sf_counter_service <- sf_all_years %>% 
+  filter(occ_title== "Counter Attendants, Cafeteria, Food Concession, and Coffee Shop") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_counter_service.csv")
+
+sf_dishwashers <- sf_all_years %>% 
+  filter(occ_title== "Dishwashers") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_dishwashers.csv")
+
+sf_cooks <- sf_all_years %>% 
+  filter(occ_title== "Cooks, Restaurant") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_cooks.csv")
+
+sf_head_chefs <- sf_all_years %>% 
+  filter(occ_title == "Chefs and Head Cooks") %>% 
+  group_by(year) %>% 
+  summarise(
+    h_pct10,
+    h_pct25,
+    h_median,
+    h_pct75,
+    h_pct90,
+    h_mean,
+    tot_emp,
+    jobs_1000
+  ) %>% 
+  write_csv("data/sf_head_chefs.csv")
+```
+
+
+###Exploratory analysis
+```{r}
+glimpse(dc_all_years)
+glimpse(sf_all_years)
+```
+```{r}
+summary(dc_all_years)
+summary(sf_all_years)
+```
+
+First, we wanted to compare earnings between workers in each city and look at whether servers and bartenders in the cities without the tip credit make more than those in Washington, D.C. with its sub-minimum wage. Our initial investigation found that the answer to the question is mixed. In 2011 median incomes for servers and bartenders were as follows:
+
+```{r}
+knitr::include_graphics(rep("images/image1.png"))
+
+```
+
+In Seattle especially, it would appear that workers making the full minimum wage without the tip credit fare better than those who are paid the sub-minimum wage. We observed an interesting shift once each jurisdiction began raising their minimum wages to $15 and beyond. As minimum wages increased, workers in D.C. saw their wages grow at a much faster rate than in San Francisco and Seattle. By 2020 the wage picture had changed significantly:
+
+```{r}
+knitr::include_graphics(rep("images/image2.png"))
+
+```
+
+By 2020, D.C. servers and bartenders had begun to significantly outpace their peers in Seattle and San Francisco, where median wages remain relatively close to the minimum. As minimum wages began to rise in response to the Fight for 15 movement, workers across the board saw consistent increases in their pay, it would seem that workers in D.C. were able to extract much greater benefits from these increases, potentially a result of the increase in tipping that followed throwing cold water on the claim by organizers that “In the 7 states without the tip credit, customers tip more, not less.”[https://betterrestaurantsdc.org/faq/] Our findings suggest that the minimum wage increases implemented in each city have been the main driver of wage increases among tipped workers, but workers in cities without tip credits end up seeing their wages rise at a much slower pace.
+
+#Question 1: Do front of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+
+##Our process to answer Question 1:
+
+We decided to use a grouped bar graph because it allowed us to compare the median incomes of the three cities for the past 11 years side-by-side. The graphs created in datawrapper are included below, along with the code generated for this investigation.
+
+Bartenders: https://datawrapper.dwcdn.net/yyIeu/4/
+Servers: https://datawrapper.dwcdn.net/tL0Wg/3/
+
+```{r}
+#Front of house employees
+
+#Bartenders
+sea_med_income <- sea_bartenders %>%
+  select(h_median, year) %>%
+  rename(sea_bartenders_median = h_median)
+
+dc_med_income <- dc_bartenders %>%
+  select(h_median, year) %>%
+  rename(dc_bartenders_median = h_median)
+
+sf_med_income <- sf_bartenders %>%
+  select(h_median, year) %>%
+  rename(sf_bartenders_median = h_median)
+
+bartenders_med_income <- sea_med_income %>%
+  left_join(dc_med_income) %>%
+  left_join(sf_med_income)
+
+write_csv(bartenders_med_income, "data/bartenders_med_income.csv")
+
+#Servers
+sea_med_income_servers <- sea_servers %>%
+  select(h_median, year) %>%
+  rename(sea_bartenders_median = h_median)
+
+dc_med_income_servers <- dc_servers %>%
+  select(h_median, year) %>%
+  rename(dc_bartenders_median = h_median)
+
+sf_med_income_servers <- sf_servers %>%
+  select(h_median, year) %>%
+  rename(sf_bartenders_median = h_median)
+
+servers_med_income <- sea_med_income_servers %>%
+  left_join(dc_med_income_servers) %>%
+  left_join(sf_med_income_servers)
+
+write_csv(servers_med_income, "data/servers_med_income.csv")
+```
+
+------ 
+
+This analysis of median earnings gives an interesting snapshot of earnings in each city, but we also wanted to take a more granular look at the data to identify any interesting trends. Specifically, proponents of the initiative have pointed out that while some workers may do very well under the tip credit system, those benefits are not always evenly distributed. In a post supporting Initiative 77 Elise Gould and David Cooper point out “the average hourly wage of waitstaff in D.C. [in 2017] was 17.48 dollars, but this average is skewed by the subset of servers in high-end restaurants that do exceptionally well. The fact that the average is so far from the median wage [$11.86] is indicative of significant wage inequality among district waitstaff.”[https://www.epi.org/blog/seven-facts-about-tipped-workers-and-the-tipped-minimum-wage/] To evaluate this we used the detailed tables provided by BLS that provide data for workers broken down by percentile (10th, 25th, median, 75th, and 90th) and plotted each percentile for servers and bartenders in each city over time.
+
+Looking at the chart, in each city workers in the bottom 25th and 10th percentiles have very little difference in their wages and make roughly the minimum wage. This data shows that being paid the full minimum wage without a tip credit does not have a significant impact on earnings of workers at the bottom of the income scale. One noticeable difference between DC and the two cities without tip credits is there is a much larger gap between the top earners and the median income, with one exception being San Francisco bartenders. In 2018 this gap was almost $34 for servers in DC, while the range of incomes in cities with no tip credit seems to be much tighter. While EPI’s observation of a wider range of economic inequality in D.C. appears to be true, the narrower gap in Seattle and San Francisco appears to come from lower wages for the upper tier of workers and not higher wages for workers at the bottom.
+
+
+#Question 2: How are FOH workers across the earning spectrum affected by the tip credit (if at all)
+
+To answer this question I generated line graphs (viewable via "webpage/foh.html") for servers and bartenders in each city to get a sense of the gaps between income levels and how wages have changed over time based on the data frames created earlier for each occupation in each city (dc_bartenders, dc_servers, sf_bartenders, sf_servers, sea_bartenders, sea_servers).
+
+I also collected minimum wage data from the web for each city (https://www.laborlawcenter.com/state-minimum-wage-rates, https://sfgov.org/olse/historical-wage-rates-definition-government-supported-employee, https://library.municode.com/wa/seattle/codes/municipal_code?nodeId=TIT14HURI_CH14.19MIWAMICORAEMPEWOSE_14.19.030HOMIWACH1EM, 
+https://www.seattle.gov/documents/Departments/LaborStandards/OLS-MW-multiyearChart2022%20%28002%29.pdf)
+
+------
+
+After looking at data for front-of-house staff (bartenders, servers), we decided to expand our investigation to back-of-house workers (cooks and dishwashers). We decided to look at BOH workers because they are less affected by a tip credit than FOH staff. 
+
+The principle is simple: FOH receives tips, BOH does not. Our hypothesis was that there shouldn't be too steep of a difference between the median income of BOH staff across the three cities because the tip credit would not alter the wages.
+
+Proponents of eliminating tip credits cite the wage gap between FOH and BOH workers as another reason to eliminate the system. The argument goes that by eliminating tip credits and paying a standard base wage, the entire staff can then benefit from extra money earned on top. To see if this holds true we first looked at the difference between what FOH staff make and what BOH staff make.
+
+#Question 3: How do tip credits affect the wage gap between front and back-of-house workers?
+In all 3 cities, SF and Seattle with no tip credit, and DC with a tip credit, in 2021, BOH workers were making slightly more than FOH workers. When averaging this difference across all years, DC FOH and BOH workers make close to the same amount, with only a 7 cent difference. However, in San Francisco, FOH workers make 0.29 cents less and in Seattle, FOH workers make 0.57 cents more. Therefore, this data shows that having a tip credit might even the playing ground between FOH and BOH workers.
+
+## comparing bartenders and servers (FOH) with BOH (cooks and dishwashers)
+1. Create a combined table with year, median, and total employees for FOH workers in each city (bartenders and servers)
+
+###Seattle:
+```{r}
+sea_servers_to_combine <- sea_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+sea_bartenders_to_combine <- sea_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+sea_FOH <- sea_servers_to_combine %>%
+  left_join(sea_bartenders_to_combine)
+sea_FOH <- sea_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+###SanFran
+```{r}
+sf_servers_to_combine <- sf_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+sf_bartenders_to_combine <- sf_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+sf_FOH <- sf_servers_to_combine %>%
+  left_join(sf_bartenders_to_combine)
+sf_FOH <- sf_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+###DC
+```{r}
+dc_servers_to_combine <-dc_servers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(server_median = h_median) %>%
+  rename(server_emp = tot_emp)
+dc_bartenders_to_combine <- dc_bartenders %>%
+  select(year, h_median, tot_emp) %>%
+  rename(bartenders_median = h_median) %>%
+  rename(bartenders_emp = tot_emp)
+```
+
+```{r}
+dc_FOH <- dc_servers_to_combine %>%
+  left_join(dc_bartenders_to_combine)
+dc_FOH <- dc_FOH %>%
+  mutate(average_FOH_wage = (server_median + bartenders_median)/2)
+```
+
+## 2. Create a combined table with year, median, and total employees for BOH workers in each city (cooks and dishwashers)
+
+###Seattle
+```{r}
+sea_cooks_to_combine <- sea_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+sea_dishwashers_to_combine <- sea_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+sea_BOH <- sea_cooks_to_combine %>%
+  left_join(sea_dishwashers_to_combine)
+sea_BOH <- sea_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+###SanFran
+```{r}
+sf_cooks_to_combine <- sf_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+sf_dishwashers_to_combine <- sf_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+sf_BOH <- sf_cooks_to_combine %>%
+  left_join(sf_dishwashers_to_combine)
+sf_BOH <-sf_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+###DC 
+```{r}
+dc_cooks_to_combine <- dc_cooks %>%
+  select(year, h_median, tot_emp) %>%
+  rename(cooks_median = h_median) %>%
+  rename(cooks_emp = tot_emp)
+dc_dishwashers_to_combine <- dc_dishwashers %>%
+  select(year, h_median, tot_emp) %>%
+  rename(dishwashers_median = h_median) %>%
+  rename(dishwashers_emp = tot_emp)
+```
+
+```{r}
+dc_BOH <- dc_cooks_to_combine %>%
+  left_join(dc_dishwashers_to_combine)
+dc_BOH <- dc_BOH %>%
+  mutate(average_BOH_wage = (cooks_median + dishwashers_median)/2)
+```
+
+## 3. Combine the FOH and BOH averages together and subtract them to find the difference for each city
+```{r}
+sea_FOH_BOH <- sea_FOH %>%
+  left_join(sea_BOH)
+sea_final <-sea_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+```{r}
+SEA_difference_FOH_BOH <-mean(sea_final$difference)
+```
+
+```{r}
+sf_FOH_BOH <- sf_FOH %>%
+  left_join(sf_BOH)
+sf_final <- sf_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+
+```{r}
+SF_difference_FOH_BOH <-mean(sf_final$difference)
+```
+
+```{r}
+dc_FOH_BOH <- dc_FOH %>%
+  left_join(dc_BOH)
+dc_final <- dc_FOH_BOH %>%
+  mutate(difference = average_FOH_wage - average_BOH_wage)
+```
+
+```{r}
+DC_difference_FOH_BOH <-mean(dc_final$difference)
+```
+
+------ 
+
+While each city saw the median income increase year-to-year, that is most likely due to an increase in the minimum wage; there was never more than two dollars and fifty cents wage gap in the incomes of cooks, and that happened in only one instance. Every other year it was at most two dollars. 
+
+For dishwashers, wages were almost identical across the cities, with the largest difference hovering around $1.50. 
+
+Each of the three cities led in wages or was last in wages at some point in the last 11 years, so the tip credit does not have a significant impact on the wages of BOH workers.  
+
+Again, these professions are much less tip-dependent than FOH staff, so that is why the data shows a relative balance between cooks and dishwashers in Seattle, D.C., and San Francisco.
+
+# Question 4: Continuation of question 1 - Do back of house workers in cities without the tip credit make more money than workers in cities that pay the sub-minimum wage?
+
+We again used a grouped bar graph because it allowed us to compare the median incomes of SEA, DC, SF for the past 11 years side-by-side. The graphs created in datawrapper are included below, along with the code generated for this investigation.
+
+Cooks: https://datawrapper.dwcdn.net/rJiyz/2/
+Dishwashers: https://datawrapper.dwcdn.net/Uj1Hk/1/
+
+```{r}
+#Back of house employees
+
+#Cooks
+sea_med_income_boh <- sea_cooks %>%
+  select(h_median, year) %>%
+  rename(sea_cooks_median = h_median)
+
+dc_med_income_boh <- dc_cooks %>%
+  select(h_median, year) %>%
+  rename(dc_cooks_median = h_median)
+
+sf_med_income_boh <- sf_cooks %>%
+  select(h_median, year) %>%
+  rename(sf_cooks_median = h_median)
+
+cooks_med_income <- sea_med_income_boh %>%
+  left_join(dc_med_income_boh) %>%
+  left_join(sf_med_income_boh)
+
+write_csv(cooks_med_income, "data/cooks_med_income.csv")
+
+#Dishwashers
+sea_med_income_dish <- sea_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sea_dishwashers_median = h_median)
+
+dc_med_income_dish <- dc_dishwashers %>%
+  select(h_median, year) %>%
+  rename(dc_dishwashers_median = h_median)
+
+sf_med_income_dish <- sf_dishwashers %>%
+  select(h_median, year) %>%
+  rename(sf_dishwashers_median = h_median)
+
+dishwashers_med_income <- sea_med_income_dish %>%
+  left_join(dc_med_income_dish) %>%
+  left_join(sf_med_income_dish)
+
+write_csv(dishwashers_med_income, "data/dishwashers_med_income.csv")
+```
+
+------ 
+Looking at the plot of earnings for BOH workers over time a similar trend to FOH workers can be observed. Median earnings across all cities consistently sit above the minimum wage, although not by very large margins. Unlike FOH workers, wage growth is relatively consistent between cities even as minimum wages begin to increase. The same is also true for dishwashers, with wages tracking very closely to the minimum wage. However, dishwashers in Seattle and San Francisco do see about a $1 increase in median earnings compared to their counterparts in D.C. This is often considered the lowest rung in the restaurant hierarchy and higher earning for these workers could reflect higher base wages overall being offered in these cities.
+
+#Question 5: Continuation of question 2: How are BOH workers across the earning spectrum affected by the tip credit (if at all)? 
+To answer this question I generated line graphs (viewable via "webpage/boh.html") for dishwashers and cooks in each city to get a sense of the gaps between income levels and how wages have changed over time based on the data frames created earlier for each occupation in each city (dc_dishwashers, dc_cooks, sf_dishwashers, sf_cooks, sea_dishwashers, sea_cooks).
+
+I also collected minimum wage data from the web for each city (https://www.laborlawcenter.com/state-minimum-wage-rates, https://sfgov.org/olse/historical-wage-rates-definition-government-supported-employee, https://library.municode.com/wa/seattle/codes/municipal_code?nodeId=TIT14HURI_CH14.19MIWAMICORAEMPEWOSE_14.19.030HOMIWACH1EM, 
+https://www.seattle.gov/documents/Departments/LaborStandards/OLS-MW-multiyearChart2022%20%28002%29.pdf)
+
+------ 
+
+#COVID IMPLICATIONS
+The trend observed for bartenders and servers seemed to flatten a bit in 2021, but that was during the pandemic, so it's hard to tell if employers were using loans to pay their employees, as restaurants suffered during covid. It could also be that fewer people were eating out in D.C. than in Seattle and San Francisco, further impacting tips and wages. 
+
+In Seattle, restaurants and bars were closed for dine-in service on March 15, 2020 after Gov. Jay Inslee signed an emergency proclamation. Dining wasn’t open again at all until June 5, 2020, when Seattle entered phase 1.5 of restrictions and allowed a 25% capacity for indoor dining. Restrictions for restaurants weren’t fully lifted until June 30, 2021. 
+
+Similar restrictions hit the other cities we looked at. In DC, restrictions were fully lifted on May 21, 2021. In San Francisco, restaurant capacity restrictions were lifted on June, 15, 2021. 
+
+To look more in depth on how COVID restrictions might have affected the restaurant industries in the three cities, we graphed their total restaurant employment per 100,000 people over the course of the last 10 years. 
+
+#Question #6: How have the restaurant industries grown (or shrunk?) over the past 10 years in Seattle, San Francisco, and DC?
+
+##Answer: To answer this question, I graphed the total employment numbers for each cities over the past 10 years:
+
+
+Graph of total employment numbers: https://www.datawrapper.de/_/uInne/ 
+Graph of total employment (rate per 1000 people): https://www.datawrapper.de/_/KyK5y/ 
+Side by side comparison: webpage/total_employment.html
+
+As seen in these charts, the restaurant industry in San Francisco had been steady (but at a slow decline). The restaurant industry in DC was increasing slowly and the restaurant industry in Seattle continued at a steady rate. However, the restaurant industry employment in all three cities tanked when COVID hit in 2020. Knowing this can make it easier to understand potential wage increases and decreases, especially during COVID when employment shrunk in all three cities. 
+
+###How I answered Question 6:
+
+1. Create dataframes with each total employment for DC workers and combine
+```{r}
+#DC 
+dc_bartenders_emp <- dc_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_bartenders_emp = tot_emp) %>%
+  rename(dc_bartenders_emp_per_1000 = jobs_1000)
+dc_servers_emp <- dc_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_servers_emp = tot_emp) %>%
+  rename(dc_servers_emp_per_1000 = jobs_1000)
+dc_dishwashers_emp <- dc_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_dishwashers_emp = tot_emp) %>%
+  rename(dc_dishwashers_emp_per_1000 = jobs_1000)
+dc_cooks_emp <- dc_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(dc_cooks_emp = tot_emp) %>%
+  rename(dc_cooks_emp_per_1000 = jobs_1000)
+dc_tot_emp <- dc_bartenders_emp %>%
+  left_join(dc_servers_emp) %>%
+  left_join(dc_dishwashers_emp) %>%
+  left_join(dc_cooks_emp)
+#Seattle 
+sea_bartenders_emp <- sea_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_bartenders_emp = tot_emp) %>%
+  rename(sea_bartenders_emp_per_1000 = jobs_1000)
+sea_servers_emp <- sea_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_servers_emp = tot_emp) %>%
+  rename(sea_servers_emp_per_1000 = jobs_1000)
+sea_dishwashers_emp <- sea_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_dishwashers_emp = tot_emp) %>%
+  rename(sea_dishwashers_emp_per_1000 = jobs_1000)
+sea_cooks_emp <- sea_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sea_cooks_emp = tot_emp) %>%
+  rename(sea_cooks_emp_per_1000 = jobs_1000)
+sea_tot_emp <- sea_bartenders_emp %>%
+  left_join(sea_servers_emp) %>%
+  left_join(sea_dishwashers_emp) %>%
+  left_join(sea_cooks_emp)
+#SanFran
+sf_bartenders_emp <- sf_bartenders %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_bartenders_emp = tot_emp) %>%
+  rename(sf_bartenders_emp_per_1000 = jobs_1000)
+sf_servers_emp <- sf_servers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_servers_emp = tot_emp) %>%
+  rename(sf_servers_emp_per_1000 = jobs_1000)
+sf_dishwashers_emp <- sf_dishwashers %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_dishwashers_emp = tot_emp) %>%
+  rename(sf_dishwashers_emp_per_1000 = jobs_1000)
+sf_cooks_emp <- sf_cooks %>%
+  select(year, tot_emp, jobs_1000) %>%
+  rename(sf_cooks_emp = tot_emp) %>%
+  rename(sf_cooks_emp_per_1000 = jobs_1000)
+sf_tot_emp <- sf_bartenders_emp %>%
+  left_join(sf_servers_emp) %>%
+  left_join(sf_dishwashers_emp) %>%
+  left_join(sf_cooks_emp)
+```
+
+2. Create a new column that adds all together and limit dataframe to those columns to combine
+```{r}
+dc_tot_emp <- dc_tot_emp %>%
+  mutate(dc_tot_emp = dc_bartenders_emp + dc_servers_emp + dc_dishwashers_emp + dc_cooks_emp ) %>%
+  mutate(dc_tot_emp_per_1000 = dc_bartenders_emp_per_1000 + dc_servers_emp_per_1000 + dc_dishwashers_emp_per_1000 + dc_cooks_emp_per_1000 ) %>%
+  select(year, dc_tot_emp, dc_tot_emp_per_1000)
+sea_tot_emp <- sea_tot_emp %>%
+  mutate(sea_tot_emp = sea_bartenders_emp + sea_servers_emp + sea_dishwashers_emp + sea_cooks_emp ) %>%
+  mutate(sea_tot_emp_per_1000 = sea_bartenders_emp_per_1000 + sea_servers_emp_per_1000 + sea_dishwashers_emp_per_1000 + sea_cooks_emp_per_1000 ) %>%
+  select(year, sea_tot_emp, sea_tot_emp_per_1000)
+sf_tot_emp <- sf_tot_emp %>%
+  mutate(sf_tot_emp = sf_bartenders_emp + sf_servers_emp + sf_dishwashers_emp + sf_cooks_emp ) %>%
+  mutate(sf_tot_emp_per_1000 = sf_bartenders_emp_per_1000 + sf_servers_emp_per_1000 + sf_dishwashers_emp_per_1000 + sf_cooks_emp_per_1000 ) %>%
+  select(year, sf_tot_emp, sf_tot_emp_per_1000)
+```
+
+3. Merge all dataframes together again :)
+```{r}
+tot_emp <- dc_tot_emp %>%
+  left_join(sea_tot_emp) %>%
+  left_join(sf_tot_emp)
+```
+
+4. Write to a csv to make a graph in DataWrapper
+```{r}
+write.csv(tot_emp, "tot_emp.csv")
+```
+
+------ 
+
+##WHAT’S NEXT
+Although there have been reported stories on this issue, our findings as a whole are relatively new. Therefore, to fully report this story we want to thread a narrative that makes this data easier to understand from people who are not familiar with how restaurant industry tipping works.
+
+To continue reporting this story, it would be helpful to gain a narrative perspective. Talking to groups on both sides — legislators and workers — of the tip credit argument in DC will allow us to make sure our story is looking at all sides. It would also be helpful to speak to restaurant owners and employees in all three cities to talk about how their pay works, and why or why not they think it is the best system in place.
+
+By introducing real people into this narrative, it will make the story more real to readers. It is important that we interview people across the spectrum of earnings and in both FOH and BOH so that we can create a whole picture of what the industry looks like across these three cities.  
+
+On top of contacting people in the industry, it would build a bigger picture if we could contextualize the restaurant scene in the three cities. Based on research, it is hard to build a narrative about how the restaurant scene works in each city, and how they are similar or different. By visiting each city and making observations about how they differ from an outsider's perspective, we can create an image in the reader's head before we introduce our analysis. 
